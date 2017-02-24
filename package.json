@@ -1,0 +1,20 @@
+{
+  "name": "js-technical-test",
+  "version": "0.0.1",
+  "description": "StadLine technical test",
+  "scripts": {
+    "postinstall": "bower install",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "./node_modules/.bin/standard --fix"
+  },
+  "author": "Jean Guibert",
+  "devDependencies": {
+    "standard": "^8.6.0"
+  },
+  "standard": {
+    "ignore": [
+      "server",
+      "app/bower_components"
+    ]
+  }
+}
