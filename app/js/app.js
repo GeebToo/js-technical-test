@@ -1,4 +1,4 @@
-/* global angular */
+/* global angular, marked */
 'use strict'
 
 angular.module('angularApp', ['ui.router'])
@@ -16,7 +16,7 @@ angular.module('angularApp').config(function ($stateProvider, $urlRouterProvider
   GitHubProvider.setGitHubURL('https://api.github.com/repos/')
 })
 
-angular.module('angularApp').controller('mainController', function ($scope, $rootScope, GitHub) {
+angular.module('angularApp').controller('mainController', function ($scope, $rootScope, $sce, GitHub) {
   $scope.issue = {
     'url': 'nodejs/node/issues/6867',
     'messages': []
@@ -54,6 +54,15 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
   }, err => {
     console.log(err)
   })
+
+  $scope.html = function (text) {
+    if (text) {
+      var mark = marked(text)
+      return $sce.trustAsHtml(mark)
+    } else {
+      return text
+    }
+  }
 })
 
 angular.module('angularApp').provider('GitHub', function () {

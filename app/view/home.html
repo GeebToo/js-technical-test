@@ -19,7 +19,7 @@
               <img src="{{ message.userImage }}" class="rounded-circle" style="width: 30px; height: 30px">
             </div>
             <div class="rounded col-sm-11 message" ng-class="message.isComment ? 'pull-sm-1' : ''">
-              <p>{{ message.body }}</p>
+              <p data-ng-bind-html="html(message.body)"></p>
             </div>
           </div>
         </li>
