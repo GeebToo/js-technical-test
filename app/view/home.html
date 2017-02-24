@@ -10,15 +10,22 @@
   <div class="row">
     <div class="col-md-5 filter-container">
       <h3>Contributors</h3>
+      <button class="btn btn-primary btn-sm" ng-click="resetFilter()">Reset</button>
+      <ul class="list-group">
+        <li class="list-group-item list-group-item-action" ng-class="{ 'list-group-item-info' : userSelected(contributor.name) }" ng-repeat="(key, contributor) in contributors" ng-click="filterMessage(contributor.name)">
+          <img src="{{ contributor.avatar }}" class="rounded-circle" style="width: 30px; height: 30px; margin-right: 20px">
+          {{ contributor.name }}
+        </li>
+      </ul>
     </div>
     <div class="col-md-7 issue-container">
       <ul>
-        <li ng-repeat="(key, message) in issue.messages">
+        <li ng-repeat="(key, message) in issue.messages | inArray:usersToFilter:'user'">
           <div class="row" ng-class="message.isComment ? 'comment' : 'issue'">
-            <div class="col-sm-1" ng-class="message.isComment ? 'push-sm-11' : ''">
+            <div class="col-sm-1" ng-class="{ 'push-sm-11' : message.isComment }">
               <img src="{{ message.userImage }}" class="rounded-circle" style="width: 30px; height: 30px">
             </div>
-            <div class="rounded col-sm-11 message" ng-class="message.isComment ? 'pull-sm-1' : ''">
+            <div class="rounded col-sm-11 message" ng-class="{ 'pull-sm-1' : message.isComment }">
               <p data-ng-bind-html="html(message.body)"></p>
             </div>
           </div>

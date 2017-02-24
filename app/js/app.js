@@ -1,4 +1,4 @@
-/* global angular, marked */
+/* global angular, marked, _ */
 'use strict'
 
 angular.module('angularApp', ['ui.router'])
@@ -21,6 +21,9 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
     'url': 'nodejs/node/issues/6867',
     'messages': []
   }
+  $scope.contributors = {}
+
+  $scope.usersToFilter = []
 
   GitHub.GetIssue($scope.issue.url).then(resp => {
     let issue = resp.data
@@ -34,6 +37,11 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
     $scope.issue.title = issue.title
     $scope.issue.number = issue.number
     $scope.issue.messages.push(message)
+
+    $scope.contributors[issue.user.login] = {
+      'name': issue.user.login,
+      'avatar': issue.user.avatar_url
+    }
   }, err => {
     console.log(err)
   })
@@ -50,6 +58,11 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
         'isComment': true
       }
       $scope.issue.messages.push(issueComment)
+
+      $scope.contributors[comment.user.login] = {
+        'name': comment.user.login,
+        'avatar': comment.user.avatar_url
+      }
     })
   }, err => {
     console.log(err)
@@ -62,6 +75,22 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
     } else {
       return text
     }
+  }
+
+  $scope.filterMessage = function (userName) {
+    if (_.includes($scope.usersToFilter, userName)) {
+      _.pull($scope.usersToFilter, userName)
+    } else {
+      $scope.usersToFilter.push(userName)
+    }
+  }
+
+  $scope.resetFilter = function () {
+    $scope.usersToFilter = []
+  }
+
+  $scope.userSelected = function (userName) {
+    return _.includes($scope.usersToFilter, userName)
   }
 })
 
@@ -87,4 +116,14 @@ angular.module('angularApp').provider('GitHub', function () {
       return $http.get(GITHUB_URL + issueURL + '/comments')
     }
   }]
+})
+
+angular.module('angularApp').filter('inArray', function ($filter) {
+  return function (list, arrayFilter, element) {
+    if (arrayFilter) {
+      return $filter('filter')(list, function (listItem) {
+        return arrayFilter.indexOf(listItem[element]) === -1
+      })
+    }
+  }
 })
