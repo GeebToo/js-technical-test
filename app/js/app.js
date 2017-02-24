@@ -16,11 +16,44 @@ angular.module('angularApp').config(function ($stateProvider, $urlRouterProvider
   GitHubProvider.setGitHubURL('https://api.github.com/repos/')
 })
 
-angular.module('angularApp').controller('mainController', function ($scope, $rootScope) {
+angular.module('angularApp').controller('mainController', function ($scope, $rootScope, GitHub) {
   $scope.issue = {
-    'title': 'Ma super issue',
-    'number': 42
+    'url': 'nodejs/node/issues/6867',
+    'messages': []
   }
+
+  GitHub.GetIssue($scope.issue.url).then(resp => {
+    let issue = resp.data
+    let message = {
+      'user': issue.user.login,
+      'userImage': issue.user.avatar_url,
+      'body': issue.body,
+      'isComment': false
+    }
+
+    $scope.issue.title = issue.title
+    $scope.issue.number = issue.number
+    $scope.issue.messages.push(message)
+  }, err => {
+    console.log(err)
+  })
+
+  GitHub.GetIssueComments($scope.issue.url).then(resp => {
+    let comments = resp.data
+
+    $scope.issue.comments = []
+    comments.forEach(comment => {
+      let issueComment = {
+        'user': comment.user.login,
+        'userImage': comment.user.avatar_url,
+        'body': comment.body,
+        'isComment': true
+      }
+      $scope.issue.messages.push(issueComment)
+    })
+  }, err => {
+    console.log(err)
+  })
 })
 
 angular.module('angularApp').provider('GitHub', function () {

@@ -12,7 +12,18 @@
       <h3>Contributors</h3>
     </div>
     <div class="col-md-7 issue-container">
-      <h3>Conversation</h3>
+      <ul>
+        <li ng-repeat="(key, message) in issue.messages">
+          <div class="row" ng-class="message.isComment ? 'comment' : 'issue'">
+            <div class="col-sm-1" ng-class="message.isComment ? 'push-sm-11' : ''">
+              <img src="{{ message.userImage }}" class="rounded-circle" style="width: 30px; height: 30px">
+            </div>
+            <div class="rounded col-sm-11 message" ng-class="message.isComment ? 'pull-sm-1' : ''">
+              <p>{{ message.body }}</p>
+            </div>
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
 </div>

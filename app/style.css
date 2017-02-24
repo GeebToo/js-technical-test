@@ -1,0 +1,61 @@
+body {
+  background-color: #F9FAFD;
+}
+
+nav {
+  background-color: #313B45;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+p {
+  margin: 0;
+}
+
+.navbar-text {
+  color: #F9FAFD;
+}
+
+.issue-container {
+  background-color: #EEF3F6;
+  border-left: 2px solid #DCE4EC;
+}
+
+.filter-container {
+  margin-top: 20px;
+}
+
+.issue, .comment {
+  margin: 20px;
+  overflow-x: hidden;
+}
+
+/***** Issue *****/
+.issue {
+  margin-right: 50px;
+}
+.issue img {
+  float: right;
+  margin-bottom: 5px;
+}
+.issue .message {
+  background-color: #F4FCFF;
+  padding: 10px;
+  font-size: 12px;
+}
+
+/***** Comments *****/
+.comment {
+  margin-left: 50px;
+}
+.comment img {
+  margin-bottom: 5px;
+}
+.comment .message {
+  background-color: #FFFEFF;
+  padding: 10px;
+  font-size: 12px;
+}
