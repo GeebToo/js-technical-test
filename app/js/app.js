@@ -22,7 +22,6 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
     'messages': []
   }
   $scope.contributors = {}
-
   $scope.usersToFilter = []
 
   GitHub.GetIssue($scope.issue.url).then(resp => {
@@ -31,6 +30,7 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
       'user': issue.user.login,
       'userImage': issue.user.avatar_url,
       'body': issue.body,
+      'date': issue.created_at,
       'isComment': false
     }
 
@@ -55,6 +55,7 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
         'user': comment.user.login,
         'userImage': comment.user.avatar_url,
         'body': comment.body,
+        'date': comment.created_at,
         'isComment': true
       }
       $scope.issue.messages.push(issueComment)

@@ -20,7 +20,7 @@
     </div>
     <div class="col-md-7 issue-container">
       <ul>
-        <li ng-repeat="(key, message) in issue.messages | inArray:usersToFilter:'user'">
+        <li ng-repeat="(key, message) in issue.messages | inArray:usersToFilter:'user' | orderBy:'date'">
           <div class="row" ng-class="message.isComment ? 'comment' : 'issue'">
             <div class="col-sm-1" ng-class="{ 'push-sm-11' : message.isComment }">
               <img src="{{ message.userImage }}" class="rounded-circle" style="width: 30px; height: 30px">
