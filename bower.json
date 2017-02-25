@@ -16,6 +16,7 @@
     "angular": "1.6.2",
     "angular-ui-router": "^0.4.2",
     "marked": "^0.3.6",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "angular-chart.js": "^1.1.1"
   }
 }

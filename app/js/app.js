@@ -1,7 +1,7 @@
 /* global angular, marked, _ */
 'use strict'
 
-angular.module('angularApp', ['ui.router'])
+angular.module('angularApp', ['ui.router', 'chart.js'])
 
 angular.module('angularApp').config(function ($stateProvider, $urlRouterProvider, GitHubProvider) {
   $stateProvider
@@ -21,7 +21,11 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
     'url': $stateParams.name + '/' + $stateParams.repo + '/issues/' + $stateParams.number,
     'messages': []
   }
-  $scope.contributors = {}
+  $scope.contributors = {
+    'users': [],
+    'avatars': [],
+    'nbreOfWords': []
+  }
   $scope.usersToFilter = []
 
   GitHub.GetIssue($scope.issue.url).then(resp => {
@@ -39,10 +43,16 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
     $scope.issue.number = issue.number
     $scope.issue.messages.push(message)
 
-    $scope.contributors[issue.user.login] = {
-      'name': issue.user.login,
-      'avatar': issue.user.avatar_url
+    if (_.includes($scope.contributors.users, issue.user.login)) {
+      let index = _.indexOf($scope.contributors.users, issue.user.login)
+      $scope.contributors.nbreOfWords[index] += countWords(issue.body)
+    } else {
+      $scope.contributors.users.push(issue.user.login)
+      $scope.contributors.avatars.push(issue.user.avatar_url)
+      $scope.contributors.nbreOfWords.push(countWords(issue.body))
     }
+
+    $scope.contributors.user
   }, err => {
     $scope.hasError = true
     console.log(err)
@@ -52,7 +62,6 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
     $scope.hasError = false
     let comments = resp.data
 
-    $scope.issue.comments = []
     comments.forEach(comment => {
       let issueComment = {
         'user': comment.user.login,
@@ -63,9 +72,13 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
       }
       $scope.issue.messages.push(issueComment)
 
-      $scope.contributors[comment.user.login] = {
-        'name': comment.user.login,
-        'avatar': comment.user.avatar_url
+      if (_.includes($scope.contributors.users, comment.user.login)) {
+        let index = _.indexOf($scope.contributors.users, comment.user.login)
+        $scope.contributors.nbreOfWords[index] += countWords(comment.body)
+      } else {
+        $scope.contributors.users.push(comment.user.login)
+        $scope.contributors.avatars.push(comment.user.avatar_url)
+        $scope.contributors.nbreOfWords.push(countWords(comment.body))
       }
     })
   }, err => {
@@ -132,3 +145,7 @@ angular.module('angularApp').filter('inArray', function ($filter) {
     }
   }
 })
+
+function countWords (str) {
+  return str.trim().split(/\s+/).length
+}

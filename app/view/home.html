@@ -10,11 +10,14 @@
   <div class="row">
     <div class="col-md-5 filter-container">
       <h3>Contributors</h3>
+      <div style="width: 200px; height: 200px; margin: 20px;">
+        <canvas id="pie" class="chart chart-pie" chart-data="contributors.nbreOfWords" chart-labels="contributors.users" ></canvas>
+      </div>
       <button class="btn btn-primary btn-sm" ng-click="resetFilter()">Reset</button>
       <ul class="list-group">
-        <li class="list-group-item list-group-item-action" ng-class="{ 'list-group-item-info' : userSelected(contributor.name) }" ng-repeat="(key, contributor) in contributors" ng-click="filterMessage(contributor.name)">
-          <img src="{{ contributor.avatar }}" class="rounded-circle" style="width: 30px; height: 30px; margin-right: 20px">
-          {{ contributor.name }}
+        <li class="list-group-item list-group-item-action" ng-class="{ 'list-group-item-info' : userSelected(name) }" ng-repeat="(key, name) in contributors.users" ng-click="filterMessage(name)">
+          <img src="{{ contributors.avatars[key] }}" class="rounded-circle" style="width: 30px; height: 30px; margin-right: 20px">
+          {{ name }}
         </li>
       </ul>
     </div>
