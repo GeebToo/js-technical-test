@@ -59,3 +59,9 @@ p {
   padding: 10px;
   font-size: 12px;
 }
+
+.pie {
+  width: 200px;
+  height: 200px;
+  margin: 20px;
+}

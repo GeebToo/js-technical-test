@@ -16,11 +16,13 @@ angular.module('angularApp').config(function ($stateProvider, $urlRouterProvider
   GitHubProvider.setGitHubURL('https://api.github.com/repos/')
 })
 
+// Main Controller
 angular.module('angularApp').controller('mainController', function ($scope, $rootScope, $sce, $stateParams, GitHub) {
   $scope.issue = {
     'url': $stateParams.name + '/' + $stateParams.repo + '/issues/' + $stateParams.number,
     'messages': []
   }
+  // Init variables
   $scope.contributors = {
     'users': [],
     'avatars': [],
@@ -28,64 +30,35 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
   }
   $scope.usersToFilter = []
 
+  // Get Issue
   GitHub.GetIssue($scope.issue.url).then(resp => {
     $scope.hasError = false
     let issue = resp.data
-    let message = {
-      'user': issue.user.login,
-      'userImage': issue.user.avatar_url,
-      'body': issue.body,
-      'date': issue.created_at,
-      'isComment': false
-    }
-
     $scope.issue.title = issue.title
     $scope.issue.number = issue.number
-    $scope.issue.messages.push(message)
+    $scope.issue.messages.push(createMessageFromData(issue, false))
 
-    if (_.includes($scope.contributors.users, issue.user.login)) {
-      let index = _.indexOf($scope.contributors.users, issue.user.login)
-      $scope.contributors.nbreOfWords[index] += countWords(issue.body)
-    } else {
-      $scope.contributors.users.push(issue.user.login)
-      $scope.contributors.avatars.push(issue.user.avatar_url)
-      $scope.contributors.nbreOfWords.push(countWords(issue.body))
-    }
-
-    $scope.contributors.user
+    $scope.contributors = updateContributorsList($scope.contributors, issue)
   }, err => {
     $scope.hasError = true
     console.log(err)
   })
 
+  // Get Issue comments
   GitHub.GetIssueComments($scope.issue.url).then(resp => {
     $scope.hasError = false
     let comments = resp.data
 
     comments.forEach(comment => {
-      let issueComment = {
-        'user': comment.user.login,
-        'userImage': comment.user.avatar_url,
-        'body': comment.body,
-        'date': comment.created_at,
-        'isComment': true
-      }
-      $scope.issue.messages.push(issueComment)
-
-      if (_.includes($scope.contributors.users, comment.user.login)) {
-        let index = _.indexOf($scope.contributors.users, comment.user.login)
-        $scope.contributors.nbreOfWords[index] += countWords(comment.body)
-      } else {
-        $scope.contributors.users.push(comment.user.login)
-        $scope.contributors.avatars.push(comment.user.avatar_url)
-        $scope.contributors.nbreOfWords.push(countWords(comment.body))
-      }
+      $scope.issue.messages.push(createMessageFromData(comment, true))
+      $scope.contributors = updateContributorsList($scope.contributors, comment)
     })
   }, err => {
     $scope.hasError = true
     console.log(err)
   })
 
+  // Parse markdown to html balise
   $scope.html = function (text) {
     if (text) {
       var mark = marked(text)
@@ -95,6 +68,7 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
     }
   }
 
+  // Hide/show message from a user
   $scope.filterMessage = function (userName) {
     if (_.includes($scope.usersToFilter, userName)) {
       _.pull($scope.usersToFilter, userName)
@@ -103,15 +77,18 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
     }
   }
 
+  // Show all messages
   $scope.resetFilter = function () {
     $scope.usersToFilter = []
   }
 
+  // used to adding class to users selected
   $scope.userSelected = function (userName) {
     return _.includes($scope.usersToFilter, userName)
   }
 })
 
+// GitHub Provider
 angular.module('angularApp').provider('GitHub', function () {
   let _this = this
   let GITHUB_URL = ''
@@ -136,6 +113,7 @@ angular.module('angularApp').provider('GitHub', function () {
   }]
 })
 
+// Filter
 angular.module('angularApp').filter('inArray', function ($filter) {
   return function (list, arrayFilter, element) {
     if (arrayFilter) {
@@ -146,6 +124,30 @@ angular.module('angularApp').filter('inArray', function ($filter) {
   }
 })
 
+// Function to count the nbre of words in a string
 function countWords (str) {
   return str.trim().split(/\s+/).length
+}
+
+function createMessageFromData (issueData, isComment) {
+  return {
+    'user': issueData.user.login,
+    'userImage': issueData.user.avatar_url,
+    'body': issueData.body,
+    'date': issueData.created_at,
+    'isComment': isComment
+  }
+}
+
+function updateContributorsList (contributors, issue) {
+  if (_.includes(contributors.users, issue.user.login)) {
+    let index = _.indexOf(contributors.users, issue.user.login)
+    contributors.nbreOfWords[index] += countWords(issue.body)
+  } else {
+    contributors.users.push(issue.user.login)
+    contributors.avatars.push(issue.user.avatar_url)
+    contributors.nbreOfWords.push(countWords(issue.body))
+  }
+
+  return contributors
 }
