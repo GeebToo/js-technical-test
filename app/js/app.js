@@ -6,25 +6,26 @@ angular.module('angularApp', ['ui.router'])
 angular.module('angularApp').config(function ($stateProvider, $urlRouterProvider, GitHubProvider) {
   $stateProvider
     .state('home', {
-      url: '/',
+      url: '/:name/:repo/issue/:number',
       templateUrl: 'view/home.html',
       controller: 'mainController'
     })
 
-  $urlRouterProvider.otherwise('/')
+  $urlRouterProvider.otherwise('/nodejs/node/issue/6867')
 
   GitHubProvider.setGitHubURL('https://api.github.com/repos/')
 })
 
-angular.module('angularApp').controller('mainController', function ($scope, $rootScope, $sce, GitHub) {
+angular.module('angularApp').controller('mainController', function ($scope, $rootScope, $sce, $stateParams, GitHub) {
   $scope.issue = {
-    'url': 'nodejs/node/issues/6867',
+    'url': $stateParams.name + '/' + $stateParams.repo + '/issues/' + $stateParams.number,
     'messages': []
   }
   $scope.contributors = {}
   $scope.usersToFilter = []
 
   GitHub.GetIssue($scope.issue.url).then(resp => {
+    $scope.hasError = false
     let issue = resp.data
     let message = {
       'user': issue.user.login,
@@ -43,10 +44,12 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
       'avatar': issue.user.avatar_url
     }
   }, err => {
+    $scope.hasError = true
     console.log(err)
   })
 
   GitHub.GetIssueComments($scope.issue.url).then(resp => {
+    $scope.hasError = false
     let comments = resp.data
 
     $scope.issue.comments = []
@@ -66,6 +69,7 @@ angular.module('angularApp').controller('mainController', function ($scope, $roo
       }
     })
   }, err => {
+    $scope.hasError = true
     console.log(err)
   })
 
