@@ -1,5 +1,17 @@
 # StadLine Technical Test
 
+## Installation & Lancement
+
+```
+npm install --production
+node server/server.js
+```
+Puis aller sur 
+```
+http://127.0.0.1:9042/#!/nodejs/node/issue/6867
+```
+Enjoy ;-)
+
 ## Présentation générale
 
 ### Tâche
